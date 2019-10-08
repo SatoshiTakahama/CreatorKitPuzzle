@@ -105,12 +105,12 @@ public class DebugMover : MonoBehaviour
         // Up move
         if (OVRInput.GetDown(OVRInput.Button.Four))
         {
-            transform.position += Vector3.up * Scale;
+            //transform.position += Vector3.up * Scale;
         }
         // Down move
         if (OVRInput.GetDown(OVRInput.Button.Three))
         {
-            transform.position -= Vector3.up * Scale;
+            //transform.position -= Vector3.up * Scale;
         }
 #endif
     }

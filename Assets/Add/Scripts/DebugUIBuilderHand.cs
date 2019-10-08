@@ -15,6 +15,7 @@ using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEngine.SceneManagement;
 #endif
+using System;
 
 public class DebugUIBuilderHand : MonoBehaviour
 {
@@ -28,6 +29,9 @@ public class DebugUIBuilderHand : MonoBehaviour
   public const int DEBUG_PANE_CENTER = 0;
   public const int DEBUG_PANE_RIGHT = 1;
   public const int DEBUG_PANE_LEFT = 2;
+  public const int EDIT_PANE_CENTER = 3;
+  public const int EDIT_PANE_RIGHT = 4;
+  public const int PLAY_PANE_CENTER = 5;
 
   [SerializeField]
   private RectTransform buttonPrefab;
@@ -121,15 +125,15 @@ public class DebugUIBuilderHand : MonoBehaviour
     }
     GetComponent<OVRRaycaster>().pointer = lp.gameObject;
     lp.gameObject.SetActive(false);
-#if UNITY_EDITOR
-    string scene = SceneManager.GetActiveScene().name;
-    OVRPlugin.SendEvent("debug_ui_builder",
-      ((scene == "DebugUI") ||
-       (scene == "DistanceGrab") ||
-       (scene == "OVROverlay") ||
-       (scene == "Locomotion")).ToString(),
-      "sample_framework");
-#endif
+//#if UNITY_EDITOR
+//    string scene = SceneManager.GetActiveScene().name;
+//    OVRPlugin.SendEvent("debug_ui_builder",
+//      ((scene == "DebugUI") ||
+//       (scene == "DistanceGrab") ||
+//       (scene == "OVROverlay") ||
+//       (scene == "Locomotion")).ToString(),
+//      "sample_framework");
+//#endif
   }
 
   public void Show()
@@ -182,6 +186,43 @@ public class DebugUIBuilderHand : MonoBehaviour
     for (int i = 0; i < len; ++i)
     {
       toEnable[i].SetActive(false);
+    }
+  }
+
+  public void ShowActivePanels(int[] panels)
+  {
+    Relayout();
+    gameObject.SetActive(true);
+
+    if (reEnable == null || reEnable.Length < toDisable.Count) reEnable = new bool[toDisable.Count];
+    reEnable.Initialize();
+    int len = toDisable.Count;
+    for (int i = 0; i < len; ++i)
+    {
+      if (toDisable[i])
+      {
+        reEnable[i] = toDisable[i].activeSelf;
+        toDisable[i].SetActive(false);
+      }
+    }
+    len = toEnable.Count;
+    for (int i = 0; i < len; ++i)
+    {
+      toEnable[i].SetActive(true);
+    }
+
+    int numPanels = targetContentPanels.Length;
+    for (int i = 0; i < numPanels; ++i)
+    {
+    	//if (panels.Contains(i))
+    	if (0 <= Array.IndexOf(panels, i))
+    	{
+			targetContentPanels[i].gameObject.SetActive(insertedElements[i].Count > 0);
+    	}
+    	else
+    	{
+			targetContentPanels[i].gameObject.SetActive(false);
+    	}
     }
   }
 

@@ -8,12 +8,10 @@ using System.Text;
 
 public class DebugUI : MonoBehaviour
 {
-    public SceneCompletion sceneCompletion;
     public Transform displayTransform;
 
-	bool inMenu;
+	int inMenu;
 	private Text m_textFPS;
-	private Text m_textTime;
 	private Text m_textLog;
 	private Text m_textPosition;
 	private Text m_textRotation;
@@ -32,25 +30,17 @@ public class DebugUI : MonoBehaviour
 	void Start ()
     {
         //Center Panel
-        m_textFPS = AddLabelFormat("-", 0);
-        m_textTime = AddLabelFormat("-", 0); //TODO 更新する
-        m_textPosition = AddLabelFormat("-", 0); //TODO 更新する
-        m_textRotation = AddLabelFormat("-", 0); //TODO 更新する
-        DebugUIBuilderHand.instance.AddButton("Restart", RestartButtonPressed);
+        m_textFPS = AddLabelFormat("-", DebugUIBuilderHand.DEBUG_PANE_CENTER);
+        m_textPosition = AddLabelFormat("-", DebugUIBuilderHand.DEBUG_PANE_CENTER);
+        m_textRotation = AddLabelFormat("-", DebugUIBuilderHand.DEBUG_PANE_CENTER);
 
         //Right Panel
-        AddLabelFormat("Debug Log", 1);
-        m_textLog = AddLabelFormat("-", 1, 1800.0f, 20);
+        AddLabelFormat("Debug Log", DebugUIBuilderHand.DEBUG_PANE_RIGHT);
+        m_textLog = AddLabelFormat("", DebugUIBuilderHand.DEBUG_PANE_RIGHT, 1800.0f, 20);
         Application.logMessageReceived += HandleLog;
 
-        DebugUIBuilderHand.instance.Show();
-        inMenu = true;
+        inMenu = 1;
 	}
-
-    private void RestartButtonPressed()
-    {
-        sceneCompletion.ReloadLevel();
-    }
 
 	private float elapsed = 0;
 	private int tick = 0;
@@ -138,21 +128,27 @@ public class DebugUI : MonoBehaviour
 
     void Update()
     {
-        if(OVRInput.GetDown(OVRInput.Button.Two))
-        {
-            if (inMenu)
-            {
-            	DebugUIBuilderHand.instance.Hide();
-				Application.logMessageReceived -= HandleLog;
-            }
-            else
-            {
-            	DebugUIBuilderHand.instance.Show();
-				Application.logMessageReceived += HandleLog;
-            }
-            inMenu = !inMenu;
-        }
-        if(inMenu)
+//        if(OVRInput.GetDown(OVRInput.Button.Two))
+//        {
+//            if (inMenu == 0)
+//            {
+//	            inMenu = 1;
+//	            int[] panels = {DebugUIBuilderHand.PLAY_PANE_CENTER, DebugUIBuilderHand.PLAY_PANE_RIGHT};
+//            	DebugUIBuilderHand.instance.ShowActivePanels(panels);
+//            }
+//            else if (inMenu == 1)
+//            {
+//	            inMenu = 2;
+//	            int[] panels = {DebugUIBuilderHand.DEBUG_PANE_CENTER, DebugUIBuilderHand.DEBUG_PANE_RIGHT};
+//            	DebugUIBuilderHand.instance.ShowActivePanels(panels);
+//            }
+//            else
+//            {
+//	            inMenu = 0;
+//            	DebugUIBuilderHand.instance.Hide();
+//            }
+//        }
+        if(inMenu > 0)
         {
             updateFPS(m_textFPS);
             updateTransform(displayTransform, m_textPosition, m_textRotation);
